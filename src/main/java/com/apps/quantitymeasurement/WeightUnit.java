@@ -1,26 +1,23 @@
 package com.apps.quantitymeasurement;
 
-public enum WeightUnit {
+public enum WeightUnit implements IMeasurable {
 
-    KILOGRAM(1.0),
-    GRAM(0.001),
-    POUND(0.453592);
+    KILOGRAM(1000.0),
+    GRAM(1.0);
 
-    private final double conversionFactorToKg;
+    private final double conversionFactor;
 
-    WeightUnit(double conversionFactorToKg) {
-        this.conversionFactorToKg = conversionFactorToKg;
+    WeightUnit(double conversionFactor) {
+        this.conversionFactor = conversionFactor;
     }
 
+    @Override
     public double getConversionFactor() {
-        return conversionFactorToKg;
+        return conversionFactor;
     }
 
-    public double convertToBaseUnit(double value) {
-        return value * conversionFactorToKg; // to kilogram
-    }
-
-    public double convertFromBaseUnit(double baseValue) {
-        return baseValue / conversionFactorToKg; // from kilogram
+    @Override
+    public String getUnitName() {
+        return this.name();
     }
 }

@@ -21,10 +21,11 @@ public final class QuantityLength {
         return unit;
     }
 
-    /* ===================== UC5 Conversion ===================== */
+    /* ================= Conversion ================= */
 
     public static double convert(double value, LengthUnit source, LengthUnit target) {
         validate(value, source);
+
         if (target == null)
             throw new IllegalArgumentException("Target unit cannot be null");
 
@@ -40,24 +41,15 @@ public final class QuantityLength {
         return new QuantityLength(convertedValue, targetUnit);
     }
 
-    /* ===================== UC6 Addition ===================== */
+    /* ================= UC6 Addition (implicit target = first unit) ================= */
 
     public QuantityLength add(QuantityLength other) {
-        if (other == null)
-            throw new IllegalArgumentException("Second operand cannot be null");
-
-        double thisInFeet = toBaseUnit();
-        double otherInFeet = other.toBaseUnit();
-
-        double sumInFeet = thisInFeet + otherInFeet;
-
-        double resultValue = sumInFeet / this.unit.getConversionFactor();
-        return new QuantityLength(resultValue, this.unit);
+        return add(this, other, this.unit);
     }
 
-    // Static overloaded add method.
-     
-    public static QuantityLength add(QuantityLength first,QuantityLength second, LengthUnit targetUnit) {
+    /* ================= UC7 Addition (explicit target unit) ================= */
+
+    public static QuantityLength add(QuantityLength first,QuantityLength second,LengthUnit targetUnit) {
 
         if (first == null || second == null)
             throw new IllegalArgumentException("Operands cannot be null");
@@ -65,13 +57,21 @@ public final class QuantityLength {
         if (targetUnit == null)
             throw new IllegalArgumentException("Target unit cannot be null");
 
-        double firstInFeet = first.toBaseUnit();
-        double secondInFeet = second.toBaseUnit();
-
-        double sumInFeet = firstInFeet + secondInFeet;
+        double sumInFeet = sumInBaseUnit(first, second);
 
         double resultValue = sumInFeet / targetUnit.getConversionFactor();
+
         return new QuantityLength(resultValue, targetUnit);
+    }
+
+    /* ================= Private Utility ================= */
+
+    private static double sumInBaseUnit(QuantityLength a, QuantityLength b) {
+        return a.toBaseUnit() + b.toBaseUnit();
+    }
+
+    private double toBaseUnit() {
+        return this.value * this.unit.getConversionFactor();
     }
 
     private static void validate(double value, LengthUnit unit) {
@@ -82,11 +82,7 @@ public final class QuantityLength {
             throw new IllegalArgumentException("Value must be finite");
     }
 
-    private double toBaseUnit() {
-        return this.value * this.unit.getConversionFactor();
-    }
-
-    /* ===================== Object Overrides ===================== */
+    /* ================= Object Overrides ================= */
 
     @Override
     public boolean equals(Object obj) {
@@ -94,6 +90,7 @@ public final class QuantityLength {
         if (!(obj instanceof QuantityLength)) return false;
 
         QuantityLength other = (QuantityLength) obj;
+
         return Math.abs(this.toBaseUnit() - other.toBaseUnit()) < EPSILON;
     }
 

@@ -1,12 +1,35 @@
 package com.apps.quantitymeasurement;
 
 public class QuantityMeasurementApp {
- public static void main(String[] args) {
 
-	 System.out.println(new QuantityLength(1.0, LengthUnit.YARDS).equals(new QuantityLength(3.0, LengthUnit.FEET)));
+    public static double demonstrateLengthConversion(double value,LengthUnit from,LengthUnit to) 
+    {
+        return QuantityLength.convert(value, from, to);
+    }
 
-	         System.out.println(new QuantityLength(1.0, LengthUnit.YARDS).equals(new QuantityLength(36.0, LengthUnit.INCH)));
+    public static QuantityLength demonstrateLengthConversion(QuantityLength length,LengthUnit to) 
+    {
+        return length.convertTo(to);
+    }
 
-	         System.out.println(new QuantityLength(1.0, LengthUnit.CENTIMETERS).equals(new QuantityLength(0.393701, LengthUnit.INCH)));
-	     }
-	 }
+    public static boolean demonstrateLengthEquality(QuantityLength l1,QuantityLength l2) 
+    {
+        return l1.equals(l2);
+    }
+
+    public static void demonstrateLengthComparison(double v1, LengthUnit u1,double v2, LengthUnit u2) 
+    {
+        QuantityLength length1 = new QuantityLength(v1, u1);
+        QuantityLength length2 = new QuantityLength(v2, u2);
+        System.out.println("Are equal? " + demonstrateLengthEquality(length1, length2));
+    }
+
+    public static void main(String[] args) 
+    {
+        System.out.println(demonstrateLengthConversion(1.0, LengthUnit.FEET, LengthUnit.INCHES));
+        System.out.println(demonstrateLengthConversion(3.0, LengthUnit.YARDS, LengthUnit.FEET));
+        System.out.println(demonstrateLengthConversion(36.0, LengthUnit.INCHES, LengthUnit.YARDS));
+        System.out.println(demonstrateLengthConversion(1.0, LengthUnit.CENTIMETERS, LengthUnit.INCHES));
+        System.out.println(demonstrateLengthConversion(0.0, LengthUnit.FEET, LengthUnit.INCHES));
+    }
+}

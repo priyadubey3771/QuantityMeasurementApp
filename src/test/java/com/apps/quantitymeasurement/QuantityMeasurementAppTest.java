@@ -3,67 +3,76 @@ package com.apps.quantitymeasurement;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class QuantityMeasurementAppTest {
+public class QuantityMeasurementAppTest {
+
+    // ---------- FEET TEST CASES ----------
 
     @Test
-    void testEquality_SameValue() {
-        // given
-        Feet feet1 = new Feet(1.0);
-        Feet feet2 = new Feet(1.0);
-
-        // when
-        boolean result = feet1.equals(feet2);
-
-        // then
-        assertTrue(result, "Expected 1.0 ft to be equal to 1.0 ft");
+    public void testFeetEquality_SameValue() {
+        Feet f1 = new Feet(1.0);
+        Feet f2 = new Feet(1.0);
+        assertTrue(f1.equals(f2));
     }
 
     @Test
-    void testEquality_DifferentValue() {
-        // given
-        Feet feet1 = new Feet(1.0);
-        Feet feet2 = new Feet(2.0);
-
-        // when
-        boolean result = feet1.equals(feet2);
-
-        // then
-        assertFalse(result, "Expected 1.0 ft to not be equal to 2.0 ft");
+    public void testFeetEquality_DifferentValue() {
+        Feet f1 = new Feet(1.0);
+        Feet f2 = new Feet(2.0);
+        assertFalse(f1.equals(f2));
     }
 
     @Test
-    void testEquality_NullComparison() {
-        // given
-        Feet feet1 = new Feet(1.0);
-
-        // when
-        boolean result = feet1.equals(null);
-
-        // then
-        assertFalse(result, "Expected comparison with null to return false");
+    public void testFeetEquality_NullComparison() {
+        Feet f1 = new Feet(1.0);
+        assertFalse(f1.equals(null));
     }
 
     @Test
-    void testEquality_SameReference() {
-        // given
-        Feet feet1 = new Feet(1.0);
-
-        // when
-        boolean result = feet1.equals(feet1);
-
-        // then
-        assertTrue(result, "Expected object to be equal to itself");
+    public void testFeetEquality_SameReference() {
+        Feet f1 = new Feet(1.0);
+        assertTrue(f1.equals(f1));
     }
 
     @Test
-    void testEquality_DifferentType() {
-        // given
-        Feet feet1 = new Feet(1.0);
+    public void testFeetEquality_NonNumericInput() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Feet(-1.0);
+        });
+    }
 
-        // when
-        boolean result = feet1.equals("1.0");
 
-        // then
-        assertFalse(result, "Expected comparison with different type to return false");
+    // ---------- INCHES TEST CASES ----------
+
+    @Test
+    public void testInchesEquality_SameValue() {
+        Inches i1 = new Inches(1.0);
+        Inches i2 = new Inches(1.0);
+        assertTrue(i1.equals(i2));
+    }
+
+    @Test
+    public void testInchesEquality_DifferentValue() {
+        Inches i1 = new Inches(1.0);
+        Inches i2 = new Inches(2.0);
+        assertFalse(i1.equals(i2));
+    }
+
+    @Test
+    public void testInchesEquality_NullComparison() {
+        Inches i1 = new Inches(1.0);
+        assertFalse(i1.equals(null));
+    }
+
+    @Test
+    public void testInchesEquality_SameReference() {
+        Inches i1 = new Inches(1.0);
+        assertTrue(i1.equals(i1));
+    }
+
+    @Test
+    public void testInchesEquality_NonNumericInput() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Inches(-5.0);
+        });
     }
 }

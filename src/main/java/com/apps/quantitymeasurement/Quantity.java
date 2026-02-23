@@ -2,21 +2,16 @@ package com.apps.quantitymeasurement;
 
 import java.util.Objects;
 
-public final class Quantity<U extends IMeasurable> {
-
-    private static final double EPSILON = 1e-6;
+public class Quantity<U extends IMeasurable> {
 
     private final double value;
     private final U unit;
+    private static final double EPSILON = 0.0001;
 
     public Quantity(double value, U unit) {
-
-        if (unit == null)
+        if (unit == null) {
             throw new IllegalArgumentException("Unit cannot be null");
-
-        if (Double.isNaN(value) || Double.isInfinite(value))
-            throw new IllegalArgumentException("Invalid numeric value");
-
+        }
         this.value = value;
         this.unit = unit;
     }
@@ -30,39 +25,29 @@ public final class Quantity<U extends IMeasurable> {
     }
 
     private double toBaseUnit() {
-        return unit.convertToBaseUnit(value);
+        return value * unit.getConversionFactor();
     }
 
     public Quantity<U> convertTo(U targetUnit) {
-
-        if (targetUnit == null)
+        if (targetUnit == null) {
             throw new IllegalArgumentException("Target unit cannot be null");
+        }
 
         double baseValue = toBaseUnit();
-        double converted = targetUnit.convertFromBaseUnit(baseValue);
-
-        return new Quantity<>(roundToTwoDecimals(converted), targetUnit);
+        double convertedValue = baseValue / targetUnit.getConversionFactor();
+        return new Quantity<>(convertedValue, targetUnit);
     }
 
     public Quantity<U> add(Quantity<U> other) {
-        return add(other, this.unit);
+        double sumBase = this.toBaseUnit() + other.toBaseUnit();
+        double resultValue = sumBase / this.unit.getConversionFactor();
+        return new Quantity<>(resultValue, this.unit);
     }
 
     public Quantity<U> add(Quantity<U> other, U targetUnit) {
-
-        if (other == null)
-            throw new IllegalArgumentException("Other quantity cannot be null");
-
-        if (targetUnit == null)
-            throw new IllegalArgumentException("Target unit cannot be null");
-
-        if (this.unit.getClass() != other.unit.getClass())
-            throw new IllegalArgumentException("Cannot add different measurement categories");
-
         double sumBase = this.toBaseUnit() + other.toBaseUnit();
-        double result = targetUnit.convertFromBaseUnit(sumBase);
-
-        return new Quantity<>(roundToTwoDecimals(result), targetUnit);
+        double resultValue = sumBase / targetUnit.getConversionFactor();
+        return new Quantity<>(resultValue, targetUnit);
     }
 
     @Override
@@ -71,28 +56,26 @@ public final class Quantity<U extends IMeasurable> {
         if (this == obj)
             return true;
 
-        if (obj == null || getClass() != obj.getClass())
+        if (!(obj instanceof Quantity<?> other))
             return false;
 
-        Quantity<?> other = (Quantity<?>) obj;
-
-        if (this.unit.getClass() != other.unit.getClass())
+        // 🔴 IMPORTANT: Prevent cross-category comparison
+        if (!this.unit.getClass().equals(other.unit.getClass()))
             return false;
 
-        return Math.abs(this.toBaseUnit() - other.toBaseUnit()) < EPSILON;
+        double thisBase = this.value * this.unit.getConversionFactor();
+        double otherBase = other.value * other.unit.getConversionFactor();
+
+        return Math.abs(thisBase - otherBase) < EPSILON;
     }
-
+    
     @Override
     public int hashCode() {
-        return Objects.hash(Math.round(toBaseUnit() / EPSILON));
+        return Objects.hash(toBaseUnit());
     }
 
     @Override
     public String toString() {
-        return "Quantity(" + value + ", " + unit.getUnitName() + ")";
-    }
-
-    private double roundToTwoDecimals(double val) {
-        return Math.round(val * 100.0) / 100.0;
+        return value + " " + unit;
     }
 }

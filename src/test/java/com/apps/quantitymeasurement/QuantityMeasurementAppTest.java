@@ -46,7 +46,8 @@ class QuantityMeasurementAppTest {
 
 	    @Test
 	    void testAddition_NegativeValues() {
-	        QuantityLength result = QuantityLength.add(new QuantityLength(5.0, LengthUnit.FEET), new QuantityLength(-2.0, LengthUnit.FEET),LengthUnit.INCHES);
+	        QuantityLength result = QuantityLength.add(new QuantityLength(5.0, LengthUnit.FEET), new QuantityLength(-2.0, LengthUnit.FEET),
+	                LengthUnit.INCHES);
 
 	        assertEquals(36.0, result.getValue(), EPSILON);
 	    }

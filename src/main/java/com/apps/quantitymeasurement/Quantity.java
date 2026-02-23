@@ -1,17 +1,19 @@
 package com.apps.quantitymeasurement;
 
-import java.util.Objects;
-
-public class Quantity<U extends IMeasurable> {
+public final class Quantity<U extends IMeasurable> {
 
     private final double value;
     private final U unit;
     private static final double EPSILON = 0.0001;
 
     public Quantity(double value, U unit) {
-        if (unit == null) {
+
+        if (unit == null)
             throw new IllegalArgumentException("Unit cannot be null");
-        }
+
+        if (!Double.isFinite(value))
+            throw new IllegalArgumentException("Invalid numeric value");
+
         this.value = value;
         this.unit = unit;
     }
@@ -24,32 +26,56 @@ public class Quantity<U extends IMeasurable> {
         return unit;
     }
 
-    private double toBaseUnit() {
-        return value * unit.getConversionFactor();
+    private void validateOperand(Quantity<U> other) {
+
+        if (other == null)
+            throw new IllegalArgumentException("Quantity cannot be null");
+
+        if (!this.unit.getClass().equals(other.unit.getClass()))
+            throw new IllegalArgumentException("Cross-category operation not allowed");
+
+        if (!Double.isFinite(other.value))
+            throw new IllegalArgumentException("Invalid numeric value");
     }
 
-    public Quantity<U> convertTo(U targetUnit) {
-        if (targetUnit == null) {
-            throw new IllegalArgumentException("Target unit cannot be null");
-        }
-
-        double baseValue = toBaseUnit();
-        double convertedValue = baseValue / targetUnit.getConversionFactor();
-        return new Quantity<>(convertedValue, targetUnit);
+    private double toBase() {
+        return unit.convertToBaseUnit(value);
     }
 
+    private double round(double val) {
+        return Math.round(val * 100.0) / 100.0;
+    }
+
+    // ---------------- ADD ----------------
     public Quantity<U> add(Quantity<U> other) {
-        double sumBase = this.toBaseUnit() + other.toBaseUnit();
-        double resultValue = sumBase / this.unit.getConversionFactor();
-        return new Quantity<>(resultValue, this.unit);
+        validateOperand(other);
+        double baseResult = this.toBase() + other.toBase();
+        double converted = unit.convertFromBaseUnit(baseResult);
+        return new Quantity<>(round(converted), unit);
     }
 
-    public Quantity<U> add(Quantity<U> other, U targetUnit) {
-        double sumBase = this.toBaseUnit() + other.toBaseUnit();
-        double resultValue = sumBase / targetUnit.getConversionFactor();
-        return new Quantity<>(resultValue, targetUnit);
+    // ---------------- SUBTRACT ----------------
+    public Quantity<U> subtract(Quantity<U> other) {
+        validateOperand(other);
+        double baseResult = this.toBase() - other.toBase();
+        double converted = unit.convertFromBaseUnit(baseResult);
+        return new Quantity<>(round(converted), unit);
     }
 
+    // ---------------- DIVIDE ----------------
+    public double divide(Quantity<U> other) {
+
+        validateOperand(other);
+
+        double divisor = other.toBase();
+
+        if (Math.abs(divisor) < EPSILON)
+            throw new ArithmeticException("Division by zero");
+
+        return this.toBase() / divisor;
+    }
+
+    // ---------------- EQUALITY ----------------
     @Override
     public boolean equals(Object obj) {
 
@@ -59,19 +85,18 @@ public class Quantity<U extends IMeasurable> {
         if (!(obj instanceof Quantity<?> other))
             return false;
 
-        // 🔴 IMPORTANT: Prevent cross-category comparison
         if (!this.unit.getClass().equals(other.unit.getClass()))
             return false;
 
-        double thisBase = this.value * this.unit.getConversionFactor();
-        double otherBase = other.value * other.unit.getConversionFactor();
+        double thisBase = this.unit.convertToBaseUnit(this.value);
+        double otherBase = other.unit.convertToBaseUnit(other.value);
 
         return Math.abs(thisBase - otherBase) < EPSILON;
     }
-    
+
     @Override
     public int hashCode() {
-        return Objects.hash(toBaseUnit());
+        return Double.hashCode(round(toBase()));
     }
 
     @Override

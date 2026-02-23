@@ -4,21 +4,21 @@ public enum WeightUnit implements IMeasurable {
 
     KILOGRAM(1.0),
     GRAM(0.001),
-    TONNE(1000.0);
+    POUND(0.453592);
 
-    private final double toBaseFactor;
+    private final double toKgFactor;
 
-    WeightUnit(double toBaseFactor) {
-        this.toBaseFactor = toBaseFactor;
+    WeightUnit(double toKgFactor) {
+        this.toKgFactor = toKgFactor;
     }
 
     @Override
     public double convertToBaseUnit(double value) {
-        return value * toBaseFactor;
+        return value * toKgFactor;
     }
 
     @Override
     public double convertFromBaseUnit(double baseValue) {
-        return baseValue / toBaseFactor;
+        return baseValue / toKgFactor;
     }
 }

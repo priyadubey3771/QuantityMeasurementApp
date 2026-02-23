@@ -10,3 +10,6 @@
 
 # Allow gitignore itself
 !.gitignore
+
+# Ignore Eclipse metadata
+.metadata/

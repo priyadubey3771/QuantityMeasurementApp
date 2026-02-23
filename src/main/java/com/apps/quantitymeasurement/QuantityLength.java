@@ -1,6 +1,5 @@
 package com.apps.quantitymeasurement;
 
-//QuantityLength.java
 public class QuantityLength {
 
  private final double value;

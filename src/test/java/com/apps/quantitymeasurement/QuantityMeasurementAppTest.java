@@ -7,70 +7,63 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class QuantityMeasurementAppTest {
 
- @Test
- public void testEquality_YardToYard_SameValue() {
-     assertTrue(new QuantityLength(1.0, LengthUnit.YARDS)
-             .equals(new QuantityLength(1.0, LengthUnit.YARDS)));
- }
+	    private static final double EPSILON = 1e-6;
 
- @Test
- public void testEquality_YardToFeet_EquivalentValue() {
-     assertTrue(new QuantityLength(1.0, LengthUnit.YARDS)
-             .equals(new QuantityLength(3.0, LengthUnit.FEET)));
- }
+	    @Test
+	    void testConversion_FeetToInches() 
+	    {
+	        assertEquals(12.0,
+	                QuantityLength.convert(1.0, LengthUnit.FEET, LengthUnit.INCHES), EPSILON);
+	    }
 
- @Test
- public void testEquality_YardToInches_EquivalentValue() {
-     assertTrue(new QuantityLength(1.0, LengthUnit.YARDS)
-             .equals(new QuantityLength(36.0, LengthUnit.INCH)));
- }
+	    @Test
+	    void testConversion_InchesToFeet() 
+	    {
+	        assertEquals(2.0, QuantityLength.convert(24.0, LengthUnit.INCHES, LengthUnit.FEET),EPSILON);
+	    }
 
- @Test
- public void testEquality_CentimeterToInch_EquivalentValue() {
-     assertTrue(new QuantityLength(1.0, LengthUnit.CENTIMETERS)
-             .equals(new QuantityLength(0.393701, LengthUnit.INCH)));
- }
+	    @Test
+	    void testConversion_YardsToInches()
+	    {
+	        assertEquals(36.0,QuantityLength.convert(1.0, LengthUnit.YARDS, LengthUnit.INCHES),EPSILON);
+	    }
 
- @Test
- public void testEquality_MultiUnit_TransitiveProperty() {
+	    @Test
+	    void testConversion_CentimetersToInches() {
+	        assertEquals(1.0,QuantityLength.convert(2.54, LengthUnit.CENTIMETERS, LengthUnit.INCHES),1e-4);
+	    }
 
-     QuantityLength yard = new QuantityLength(1.0, LengthUnit.YARDS);
-     QuantityLength feet = new QuantityLength(3.0, LengthUnit.FEET);
-     QuantityLength inch = new QuantityLength(36.0, LengthUnit.INCH);
+	    @Test
+	    void testConversion_RoundTrip_PreservesValue() 
+	    {
+	        double original = 5.0;
+	        double converted = QuantityLength.convert(original,LengthUnit.FEET, LengthUnit.INCHES);
+	        double back = QuantityLength.convert(converted,LengthUnit.INCHES, LengthUnit.FEET);
+            assertEquals(original, back, EPSILON);
+	    }
 
-     assertTrue(yard.equals(feet));
-     assertTrue(feet.equals(inch));
-     assertTrue(yard.equals(inch));
- }
+	    @Test
+	    void testConversion_ZeroValue() 
+	    {
+	        assertEquals(0.0,QuantityLength.convert(0.0, LengthUnit.FEET, LengthUnit.INCHES),EPSILON);
+	    }
 
- @Test
- public void testEquality_YardDifferentValue() {
-     assertFalse(new QuantityLength(1.0, LengthUnit.YARDS)
-             .equals(new QuantityLength(2.0, LengthUnit.YARDS)));
- }
+	    @Test
+	    void testConversion_NegativeValue() 
+	    {
+	        assertEquals(-12.0,QuantityLength.convert(-1.0, LengthUnit.FEET, LengthUnit.INCHES),EPSILON);
+	    }
 
- @Test
- public void testEquality_CentimeterDifferentValue() {
-     assertFalse(new QuantityLength(1.0, LengthUnit.CENTIMETERS)
-             .equals(new QuantityLength(1.0, LengthUnit.FEET)));
- }
+	    @Test
+	    void testConversion_InvalidUnit_Throws() {
+	        assertThrows(IllegalArgumentException.class,() -> QuantityLength.convert(1.0, null, LengthUnit.FEET));
+	    }
 
- @Test
- public void testEquality_SameReference() {
-     QuantityLength q = new QuantityLength(2.0, LengthUnit.YARDS);
-     assertTrue(q.equals(q));
- }
+	    @Test
+	    void testConversion_NaNOrInfinite_Throws() 
+	    {
+	        assertThrows(IllegalArgumentException.class,() -> QuantityLength.convert(Double.NaN, LengthUnit.FEET, LengthUnit.INCHES));
 
- @Test
- public void testEquality_NullComparison() {
-     QuantityLength q = new QuantityLength(2.0, LengthUnit.YARDS);
-     assertFalse(q.equals(null));
- }
-
- @Test
- public void testConstructor_NullUnit() {
-     assertThrows(IllegalArgumentException.class, () -> {
-         new QuantityLength(1.0, null);
-     });
- }
-}
+	        assertThrows(IllegalArgumentException.class,() -> QuantityLength.convert(Double.POSITIVE_INFINITY,LengthUnit.FEET, LengthUnit.INCHES));
+	    }
+	}

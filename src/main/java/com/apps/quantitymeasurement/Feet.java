@@ -1,15 +1,17 @@
 package com.apps.quantitymeasurement;
 
 public class Feet {
-
-    private final double value;
+    private double value;
 
     public Feet(double value) {
+        if (value < 0) {
+            throw new IllegalArgumentException("Invalid feet value");
+        }
         this.value = value;
     }
 
-    public double getValue() {
-        return value;
+    public double toInches() {
+        return this.value * 12;
     }
 
     @Override
@@ -18,16 +20,11 @@ public class Feet {
         if (this == obj)
             return true;
 
-        if (obj == null || getClass() != obj.getClass())
+        if (obj == null || !(obj instanceof Feet))
             return false;
 
         Feet other = (Feet) obj;
 
-        return Double.compare(this.value, other.value) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return Double.hashCode(value);
+        return Math.abs(this.value - other.value) < 0.0001;
     }
 }

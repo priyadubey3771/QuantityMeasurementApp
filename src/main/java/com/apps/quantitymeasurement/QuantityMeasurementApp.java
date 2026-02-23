@@ -1,17 +1,27 @@
 package com.apps.quantitymeasurement;
 
 public class QuantityMeasurementApp {
-   public static void main(String[] args) {
 
-        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
-        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCHES);
+    public static void main(String[] args) {
 
-        System.out.println(q1.convertTo(LengthUnit.INCHES));
-        System.out.println(q1.add(q2, LengthUnit.FEET));
-        System.out.println(new QuantityLength(36.0, LengthUnit.INCHES).equals(new QuantityLength(1.0, LengthUnit.YARDS)));
+        QuantityWeight kg = new QuantityWeight(1.0, WeightUnit.KILOGRAM);
+        QuantityWeight gram = new QuantityWeight(1000.0, WeightUnit.GRAM);
+        QuantityWeight pound = new QuantityWeight(2.20462, WeightUnit.POUND);
 
-        System.out.println(new QuantityLength(1.0, LengthUnit.YARDS).add(new QuantityLength(3.0, LengthUnit.FEET), LengthUnit.YARDS));
+        // Equality
+        System.out.println("1 kg equals 1000 g: " + kg.equals(gram));
+        System.out.println("1 kg equals 2.20462 lb: " + kg.equals(pound));
 
-        System.out.println(new QuantityLength(2.54, LengthUnit.CENTIMETERS).convertTo(LengthUnit.INCHES));
+        // Conversion
+        System.out.println("1 kg to gram: " + kg.convertTo(WeightUnit.GRAM));
+        System.out.println("2 lb to kg: " +
+                new QuantityWeight(2.0, WeightUnit.POUND).convertTo(WeightUnit.KILOGRAM));
+
+        // Addition (implicit target unit)
+        System.out.println("1 kg + 1000 g: " + kg.add(gram));
+
+        // Addition (explicit target unit)
+        System.out.println("1 kg + 1000 g in gram: " +
+                kg.add(gram, WeightUnit.GRAM));
     }
 }

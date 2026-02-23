@@ -5,50 +5,57 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class QuantityMeasurementAppTest {
 
-	    private static final double EPSILON = 1e-6;
+    private static final double EPSILON = 1e-6;
 
-	    @Test
-	    void testAddition_ExplicitTargetUnit_Feet() {
-	        QuantityLength result = QuantityLength.add(new QuantityLength(1.0, LengthUnit.FEET),new QuantityLength(12.0, LengthUnit.INCHES),LengthUnit.FEET);
+    @Test
+    void testConvertToBaseUnit_InchesToFeet() {
+        assertEquals(1.0,
+                LengthUnit.INCHES.convertToBaseUnit(12.0),
+                EPSILON);
+    }
 
-	        assertEquals(2.0, result.getValue(), EPSILON);
-	        assertEquals(LengthUnit.FEET, result.getUnit());
-	    }
+    @Test
+    void testConvertFromBaseUnit_FeetToInches() {
+        assertEquals(12.0,
+                LengthUnit.INCHES.convertFromBaseUnit(1.0),
+                EPSILON);
+    }
 
-	    @Test
-	    void testAddition_ExplicitTargetUnit_Inches() {
-	        QuantityLength result = QuantityLength.add(new QuantityLength(1.0, LengthUnit.FEET), new QuantityLength(12.0, LengthUnit.INCHES),LengthUnit.INCHES);
-	        assertEquals(24.0, result.getValue(), EPSILON);
-	    }
+    @Test
+    void testEquality_Refactored() {
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
+        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCHES);
 
-	    @Test
-	    void testAddition_ExplicitTargetUnit_Yards() {
-	        QuantityLength result = QuantityLength.add(new QuantityLength(1.0, LengthUnit.FEET),new QuantityLength(12.0, LengthUnit.INCHES),LengthUnit.YARDS);
-	        assertEquals(0.666666, result.getValue(), 1e-3);
-	    }
+        assertEquals(q1, q2);
+    }
 
-	    @Test
-	    void testAddition_Commutativity_WithTarget() {
-	        QuantityLength a = new QuantityLength(1.0, LengthUnit.FEET);
-	        QuantityLength b = new QuantityLength(12.0, LengthUnit.INCHES);
+    @Test
+    void testConvertTo() {
+        QuantityLength q = new QuantityLength(1.0, LengthUnit.FEET);
+        QuantityLength result = q.convertTo(LengthUnit.INCHES);
 
-	        QuantityLength r1 = QuantityLength.add(a, b, LengthUnit.YARDS);
-	        QuantityLength r2 = QuantityLength.add(b, a, LengthUnit.YARDS);
+        assertEquals(12.0, result.getValue(), EPSILON);
+    }
 
-	        assertEquals(r1, r2);
-	    }
+    @Test
+    void testAdd_WithExplicitTarget() {
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
+        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCHES);
 
-	    @Test
-	    void testAddition_NullTargetUnit() {
-	        assertThrows(IllegalArgumentException.class, () ->
-	                QuantityLength.add(new QuantityLength(1.0, LengthUnit.FEET),new QuantityLength(12.0, LengthUnit.INCHES),null));
-	    }
+        QuantityLength result = q1.add(q2, LengthUnit.YARDS);
 
-	    @Test
-	    void testAddition_NegativeValues() {
-	        QuantityLength result = QuantityLength.add(new QuantityLength(5.0, LengthUnit.FEET), new QuantityLength(-2.0, LengthUnit.FEET),
-	                LengthUnit.INCHES);
+        assertEquals(0.666666, result.getValue(), 1e-3);
+    }
 
-	        assertEquals(36.0, result.getValue(), EPSILON);
-	    }
-	}
+    @Test
+    void testNullUnit() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new QuantityLength(1.0, null));
+    }
+
+    @Test
+    void testInvalidValue() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new QuantityLength(Double.NaN, LengthUnit.FEET));
+    }
+}

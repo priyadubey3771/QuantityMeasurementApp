@@ -5,57 +5,69 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class QuantityMeasurementAppTest {
 
-    private static final double EPSILON = 1e-6;
-
     @Test
-    void testConvertToBaseUnit_InchesToFeet() {
-        assertEquals(1.0,
-                LengthUnit.INCHES.convertToBaseUnit(12.0),
-                EPSILON);
+    void testEquality_KilogramToKilogram_SameValue() {
+        assertEquals(
+                new QuantityWeight(1.0, WeightUnit.KILOGRAM),
+                new QuantityWeight(1.0, WeightUnit.KILOGRAM)
+        );
     }
 
     @Test
-    void testConvertFromBaseUnit_FeetToInches() {
-        assertEquals(12.0,
-                LengthUnit.INCHES.convertFromBaseUnit(1.0),
-                EPSILON);
+    void testEquality_KilogramToGram_EquivalentValue() {
+        assertEquals(
+                new QuantityWeight(1.0, WeightUnit.KILOGRAM),
+                new QuantityWeight(1000.0, WeightUnit.GRAM)
+        );
     }
 
     @Test
-    void testEquality_Refactored() {
-        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
-        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCHES);
-
-        assertEquals(q1, q2);
+    void testEquality_KilogramToPound_EquivalentValue() {
+        assertEquals(
+                new QuantityWeight(1.0, WeightUnit.KILOGRAM),
+                new QuantityWeight(2.20462, WeightUnit.POUND)
+        );
     }
 
     @Test
-    void testConvertTo() {
-        QuantityLength q = new QuantityLength(1.0, LengthUnit.FEET);
-        QuantityLength result = q.convertTo(LengthUnit.INCHES);
+    void testConversion_PoundToKilogram() {
+        QuantityWeight result =
+                new QuantityWeight(2.20462, WeightUnit.POUND)
+                        .convertTo(WeightUnit.KILOGRAM);
 
-        assertEquals(12.0, result.getValue(), EPSILON);
+        assertEquals(new QuantityWeight(1.0, WeightUnit.KILOGRAM), result);
     }
 
     @Test
-    void testAdd_WithExplicitTarget() {
-        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
-        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCHES);
+    void testAddition_CrossUnit() {
+        QuantityWeight result =
+                new QuantityWeight(1.0, WeightUnit.KILOGRAM)
+                        .add(new QuantityWeight(1000.0, WeightUnit.GRAM));
 
-        QuantityLength result = q1.add(q2, LengthUnit.YARDS);
+        assertEquals(new QuantityWeight(2.0, WeightUnit.KILOGRAM), result);
+    }
 
-        assertEquals(0.666666, result.getValue(), 1e-3);
+    @Test
+    void testAddition_ExplicitTargetUnit() {
+        QuantityWeight result =
+                new QuantityWeight(1.0, WeightUnit.KILOGRAM)
+                        .add(new QuantityWeight(1000.0, WeightUnit.GRAM),
+                                WeightUnit.GRAM);
+
+        assertEquals(new QuantityWeight(2000.0, WeightUnit.GRAM), result);
     }
 
     @Test
     void testNullUnit() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new QuantityLength(1.0, null));
+        assertThrows(IllegalArgumentException.class, () ->
+                new QuantityWeight(1.0, null));
     }
 
     @Test
-    void testInvalidValue() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new QuantityLength(Double.NaN, LengthUnit.FEET));
+    void testNullComparison() {
+        QuantityWeight weight =
+                new QuantityWeight(1.0, WeightUnit.KILOGRAM);
+
+        assertFalse(weight.equals(null));
     }
 }

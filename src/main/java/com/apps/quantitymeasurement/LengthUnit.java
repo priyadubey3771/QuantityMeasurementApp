@@ -5,15 +5,36 @@ public enum LengthUnit {
     FEET(1.0),
     INCHES(1.0 / 12.0),
     YARDS(3.0),
-    CENTIMETERS(0.0328084); // 1 cm = 0.0328084 feet
+    CENTIMETERS(1.0 / 30.48);
 
-    private final double conversionFactorToFeet;
+    private final double conversionFactorToBase; // to FEET
 
-    LengthUnit(double conversionFactorToFeet) {
-        this.conversionFactorToFeet = conversionFactorToFeet;
+    LengthUnit(double conversionFactorToBase) 
+    {
+        this.conversionFactorToBase = conversionFactorToBase;
     }
 
-    public double getConversionFactor() {
-        return conversionFactorToFeet;
+    
+    public double getConversionFactor() 
+    {
+        return conversionFactorToBase;
+    }
+
+     double convertToBaseUnit(double value)
+    {
+        validate(value);
+        return value * conversionFactorToBase;
+    }
+
+    public double convertFromBaseUnit(double baseValue) 
+    {
+        validate(baseValue);
+        return baseValue / conversionFactorToBase;
+    }
+
+    private void validate(double value) {
+        if (!Double.isFinite(value)) {
+            throw new IllegalArgumentException("Value must be finite");
+        }
     }
 }

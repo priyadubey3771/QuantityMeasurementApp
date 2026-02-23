@@ -1,32 +1,27 @@
 package com.apps.quantitymeasurement;
 
 public class QuantityMeasurementApp {
- public static void main(String[] args) {
 
-        // Length Example
-        Quantity<LengthUnit> length1 = new Quantity<>(1.0, LengthUnit.FEET);
+    public static void main(String[] args) {
 
-        Quantity<LengthUnit> length2 = new Quantity<>(12.0, LengthUnit.INCH);
+        Quantity<LengthUnit> length1 =
+                new Quantity<>(10, LengthUnit.FEET);
 
-        System.out.println("Length Equal: " + length1.equals(length2));
+        Quantity<LengthUnit> length2 =
+                new Quantity<>(6, LengthUnit.INCHES);
 
-        // Weight Example
-        Quantity<WeightUnit> weight1 = new Quantity<>(1.0, WeightUnit.KILOGRAM);
+        System.out.println("Add: " + length1.add(length2));
+        System.out.println("Subtract: " + length1.subtract(length2));
+        System.out.println("Divide: " +
+                length1.divide(new Quantity<>(2, LengthUnit.FEET)));
 
-        Quantity<WeightUnit> weight2 = new Quantity<>(1000.0, WeightUnit.GRAM);
+        Quantity<VolumeUnit> volume1 =
+                new Quantity<>(1, VolumeUnit.GALLON);
 
-        System.out.println("Weight Equal: " + weight1.equals(weight2));
+        Quantity<VolumeUnit> volume2 =
+                new Quantity<>(3.78541, VolumeUnit.LITRE);
 
-        // Volume Example
-        Quantity<VolumeUnit> volume1 = new Quantity<>(1.0, VolumeUnit.LITRE);
-
-        Quantity<VolumeUnit> volume2 = new Quantity<>(1000.0, VolumeUnit.MILLILITRE);
-
-        System.out.println("Volume Equal: " + volume1.equals(volume2));
-
-        // Addition
-        Quantity<VolumeUnit> sum = volume1.add(volume2);
-
-        System.out.println("Sum: " + sum);
+        System.out.println("Volume Equality: " +
+                volume1.equals(volume2));
     }
 }

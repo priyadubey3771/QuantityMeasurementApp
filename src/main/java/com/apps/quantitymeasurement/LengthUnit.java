@@ -14,26 +14,27 @@ public enum LengthUnit {
         this.conversionFactorToBase = conversionFactorToBase;
     }
 
-    
     public double getConversionFactor() 
     {
         return conversionFactorToBase;
     }
 
-     double convertToBaseUnit(double value)
+    public double convertToBaseUnit(double value) 
     {
         validate(value);
         return value * conversionFactorToBase;
     }
 
-    public double convertFromBaseUnit(double baseValue) 
+    public double convertFromBaseUnit(double baseValue)
     {
         validate(baseValue);
         return baseValue / conversionFactorToBase;
     }
 
-    private void validate(double value) {
-        if (!Double.isFinite(value)) {
+    private void validate(double value) 
+    {
+        if (!Double.isFinite(value)) 
+        {
             throw new IllegalArgumentException("Value must be finite");
         }
     }
